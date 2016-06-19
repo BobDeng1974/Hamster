@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+        "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+        <!--编码字符集 -->
+        <constant name="struts.i18n.encoding" value="utf-8"></constant>
+        <!-- 设置Struts2开发模式 -->
+        <constant name="struts.devMode" value="false" />
+        <!-- 设置动态方法调用 -->
+        <constant name="struts.enable.DynamicMethodInvocation" value="false" />
+        <!-- 自动重新加载资源文件 -->
+        <constant name="struts.i18n.reload" value="true" />
+
+        <package name="default" namespace="/" extends="struts-default">
+                <!-- 默认Action跳转到主页 -->
+                <default-action-ref name="index"></default-action-ref>
+                <!-- 全局返回页面引用 -->
+                <global-results>
+                        <result name="error">/WEB-INF/jsp/error.jsp</result>
+                        <result name="message">/WEB-INF/jsp/message.jsp</result>
+                </global-results>
+                <!-- 主页 -->
+                <action name="index" class="cn.coselding.myblog.action.IndexAction">
+                        <result>/WEB-INF/jsp/index.jsp</result>
+                </action>
+                <!-- 列出文章列表，查询相应类型的文章列表 -->
+                <action name="listArticle" class="cn.coselding.myblog.action.ListArticleAction">
+                        <result>/WEB-INF/jsp/listarticle.jsp</result>
+                </action>
+                <!-- 搜索文章 -->
+                <action name="search" class="cn.coselding.myblog.action.SearchAction">
+                        <result>/WEB-INF/jsp/listarticle.jsp</result>
+                </action>
+                <!-- 访客留言 -->
+                <action name="commentUI" class="cn.coselding.myblog.action.CommentAction" method="commentUI">
+                        <result>/WEB-INF/jsp/comment.jsp</result>
+                        <param name="method">commentUI</param>
+                </action>
+                <action name="comment" class="cn.coselding.myblog.action.CommentAction" method="comment">
+                        <result name="input">/WEB-INF/jsp/comment.jsp</result>
+                        <result name="success" type="redirectAction">commentUI</result>
+                        <param name="method">comment</param>
+                </action>
+                <!-- 访客订阅 -->
+                <action name="rssBlogUI" class="cn.coselding.myblog.action.RssBlogAction" method="rssBlogUI">
+                        <result name="success">/WEB-INF/jsp/rss.jsp</result>
+                        <result name="input">/WEB-INF/jsp/rss.jsp</result>
+                </action>
+                <action name="rss" class="cn.coselding.myblog.action.RssBlogAction" method="rss">
+                        <result name="input">/WEB-INF/jsp/rss.jsp</result>
+                        <result name="success" type="redirectAction">index</result>
+                </action>
+                <action name="notRss" class="cn.coselding.myblog.action.RssBlogAction" method="notRss">
+                </action>
+                <!-- 访客喜欢文章 -->
+                <action name="likeAction_*" class="cn.coselding.myblog.action.LikeAction" method="{1}">
+                    <param name="method">{1}</param>
+                </action>
+        </package>
+        <package name="manage" namespace="/manage" extends="struts-default">
+                <interceptors>
+                        <interceptor name="login" class="cn.coselding.myblog.interceptor.LoginInterceptor">
+                        </interceptor>
+                        <interceptor-stack name="myStack">
+                                <interceptor-ref name="defaultStack"></interceptor-ref>
+                                <interceptor-ref name="login"></interceptor-ref>
+                        </interceptor-stack>
+                </interceptors>
+               <default-interceptor-ref name="myStack"></default-interceptor-ref>
+                <!--默认Action-->
+                <default-action-ref name="main"></default-action-ref>
+                <!--全局返回页面引用-->
+                <global-results>
+                        <result name="error">/WEB-INF/jsp/error.jsp</result>
+                        <result name="login">/WEB-INF/jsp/admin/login.jsp</result>
+                        <result name="message">/WEB-INF/jsp/message.jsp</result>
+                </global-results>
+                <!-- 主页 -->
+                <action name="main">
+                        <result>/WEB-INF/jsp/main.jsp</result>
+                </action>
+                <!-- 文章管理 -->
+                <action name="article_*" class="cn.coselding.myblog.action.manage.ArticleManager" method="{1}">
+                        <result name="query">/WEB-INF/jsp/admin/articlemanage.jsp</result>
+
+                        <result name="success">/WEB-INF/jsp/admin/article.jsp</result>
+                        <result name="input">/WEB-INF/jsp/admin/article.jsp</result>
+
+                        <result name="delete" type="redirectAction">article</result>
+                        <param name="method">{1}</param>
+                </action>
+                <!-- 类别管理 -->
+                <action name="category_*" class="cn.coselding.myblog.action.manage.CategoryManager" method="{1}">
+                        <result name="query">/WEB-INF/jsp/admin/categorymanage.jsp</result>
+
+                        <result name="success">/WEB-INF/jsp/admin/category.jsp</result>
+                        <result name="input">/WEB-INF/jsp/admin/category.jsp</result>
+
+                        <result name="delete" type="redirectAction">category</result>
+                        <param name="method">{1}</param>
+                </action>
+                <!-- 用户管理 -->
+                <action name="user_*" class="cn.coselding.myblog.action.manage.UserManager" method="{1}">
+                        <result name="query">/WEB-INF/jsp/admin/usermanage.jsp</result>
+
+                        <result name="success">/WEB-INF/jsp/admin/user.jsp</result>
+                        <result name="input">/WEB-INF/jsp/admin/user.jsp</result>
+                        <result name="delete" type="redirectAction">user</result>
+
+                        <result name="login">/WEB-INF/jsp/admin/login.jsp</result>
+                        <result name="register">/WEB-INF/jsp/admin/register.jsp</result>
+
+                        <param name="method">{1}</param>
+                </action>
+                <!-- 客户管理 -->
+                <action name="guest_*" class="cn.coselding.myblog.action.manage.GuestManager" method="{1}">
+                        <result name="query">/WEB-INF/jsp/admin/guestmanage.jsp</result>
+                        <result name="comments">/WEB-INF/jsp/admin/commentmanage.jsp</result>
+
+                        <result name="success">/WEB-INF/jsp/admin/guest.jsp</result>
+                        <result name="input">/WEB-INF/jsp/admin/guest.jsp</result>
+
+                        <result name="delete" type="redirectAction">guest</result>
+                        <param name="method">{1}</param>
+                </action>
+                <!-- 留言管理 -->
+                <action name="comment_*" class="cn.coselding.myblog.action.manage.CommentManager" method="{1}">
+                        <result name="query">/WEB-INF/jsp/admin/commentmanage.jsp</result>
+
+                        <result name="success">/WEB-INF/jsp/admin/comment.jsp</result>
+                        <result name="input">/WEB-INF/jsp/admin/comment.jsp</result>
+
+                        <result name="delete" type="redirectAction">comment</result>
+                        <param name="method">{1}</param>
+                </action>
+
+                <!-- 后台上传图片 -->
+                <action name="uploadImage" class="cn.coselding.myblog.action.UploadImageAction">
+                </action>
+
+        </package>
+</struts>
