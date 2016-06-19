@@ -33,6 +33,7 @@ public class TimeListener implements ServletContextListener,
          initialized(when the Web application is deployed). 
          You can initialize servlet context related data here.
       */
+        final ServletContextEvent sce1 = sce;
         System.out.println("TimerListener...");
         //每隔半小时更新一次主页
         Timer timer = new Timer();
@@ -40,8 +41,8 @@ public class TimeListener implements ServletContextListener,
             @Override
             public void run() {
                 try {
-                    String realPath = ConfigUtils.getProperty("realPath");
-                    String contextPath = ConfigUtils.getProperty("contextPath");
+                    String realPath = sce1.getServletContext().getRealPath("/");
+                    String contextPath = sce1.getServletContext().getContextPath();
 
                     //查询首页所需动态信息
                     Map<String, Object> params = new ArticleServiceImpl()
